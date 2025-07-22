@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas del Jugador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats-block {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stats-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+
+        .block-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #4a5568;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* Resumen Personal */
+        .personal-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            width: 30px;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Resumen del Grupo */
+        .group-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .group-stat-item {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-radius: 10px;
+            border: 2px solid #fc8181;
+        }
+
+        .group-stat-item .stat-icon {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #e53e3e;
+        }
+
+        /* Podium Styles */
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-bottom: 30px;
+            height: 200px;
+            gap: 10px;
+        }
+
+        .podium-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+            position: relative;
+        }
+
+        .podium-team {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 90px;
+            border: 3px solid;
+            transition: transform 0.3s ease;
+        }
+
+        .podium-team:hover {
+            transform: scale(1.05);
+        }
+
+        .podium-team.first {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+        }
+
+        .podium-team.second {
+            border-color: #c0c0c0;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+        }
+
+        .podium-team.third {
+            border-color: #cd7f32;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+        }
+
+        .podium-team.current {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #e6f3ff 0%, #cce7ff 100%);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .podium-medal {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .podium-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+            color: #333;
+        }
+
+        .podium-percentage {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .podium-base {
+            width: 100px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .podium-base.first {
+            height: 80px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+        }
+
+        .podium-base.second {
+            height: 60px;
+            background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
+        }
+
+        .podium-base.third {
+            height: 40px;
+            background: linear-gradient(135deg, #cd7f32 0%, #b8860b 100%);
+        }
+
+        /* Ranking List Styles */
+        .ranking-list {
+            margin-top: 20px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 12px;
+            border-left: 5px solid #e2e8f0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .ranking-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .ranking-item.current-group {
+            border-left-color: #667eea;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .ranking-position {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #666;
+            width: 40px;
+            text-align: center;
+            margin-right: 15px;
+        }
+
+        .ranking-position.top3 {
+            color: #667eea;
+        }
+
+        .ranking-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ranking-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .ranking-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .ranking-stat {
+            text-align: center;
+        }
+
+        .ranking-stat-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .ranking-stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .ranking-medal {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        /* Tabla de Jugadores */
+        .players-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .players-table th,
+        .players-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .players-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .players-table tr:nth-child(even) {
+            background-color: #f8f9ff;
+        }
+
+        .players-table tr:hover {
+            background-color: #e6f3ff;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+
+        .position-badge {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        .position-1 { background: #ffd700; color: #333; }
+        .position-2 { background: #c0c0c0; color: #333; }
+        .position-3 { background: #cd7f32; }
+        .position-other { background: #667eea; }
+
+        .current-player {
+            background-color: #fff5f0 !important;
+            border-left: 4px solid #ed8936;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .stats-block {
+                padding: 20px;
+            }
+
+            .block-title {
+                font-size: 1.2rem;
+            }
+
+            .personal-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .podium-container {
+                height: 160px;
+                gap: 5px;
+            }
+
+            .podium-team {
+                padding: 10px 5px;
+                min-width: 70px;
+            }
+
+            .podium-base {
+                width: 70px;
+            }
+
+            .podium-base.first { height: 60px; }
+            .podium-base.second { height: 45px; }
+            .podium-base.third { height: 30px; }
+
+            .ranking-stats {
+                gap: 10px;
+            }
+
+            .players-table th,
+            .players-table td {
+                padding: 8px 6px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .group-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .podium-container {
+                height: 140px;
+            }
+
+            .podium-team {
+                min-width: 60px;
+                padding: 8px 3px;
+            }
+
+            .podium-base {
+                width: 60px;
+            }
+
+            .ranking-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .ranking-stats {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Estadísticas del Jugador</h1>
+            <p>Resumen de tu rendimiento y posición</p>
+        </div>
+
+        <!-- 1. Resumen Personal -->
+        <div class="stats-block">
+            <h2 class="block-title">👤 Resumen Personal</h2>
+            <div class="personal-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">👤</span>
+                    <div class="stat-content">
+                        <div class="stat-label">Nombre</div>
+                        <div class="stat-value" id="playerName">-</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🧪</span>
+                    <div class="stat-content">
+                        <div class="stat-label">Intentos</div>
+                        <div class="stat-value" id="playerAttempts">-</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">✅</span>
+                    <div class="stat-content">
+                        <div class="stat-label">% de Acierto</div>
+                        <div class="stat-value" id="playerPercentage">-%</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🥇</span>
+                    <div class="stat-content">
+                        <div class="stat-label">Puesto Global</div>
+                        <div class="stat-value" id="globalRanking">- / -</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🧑‍🤝‍🧑</span>
+                    <div class="stat-content">
+                        <div class="stat-label">Puesto en Grupo</div>
+                        <div class="stat-value" id="groupRanking">- / -</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Resumen del Grupo -->
+        <div class="stats-block">
+            <h2 class="block-title">👥 Resumen del Grupo</h2>
+            <div class="group-stats">
+                <div class="group-stat-item">
+                    <span class="stat-icon">🏷️</span>
+                    <div class="stat-label">Grupo</div>
+                    <div class="stat-value" id="groupName">-</div>
+                </div>
+                <div class="group-stat-item">
+                    <span class="stat-icon">🧪</span>
+                    <div class="stat-label">Intentos Totales</div>
+                    <div class="stat-value" id="groupAttempts">-</div>
+                </div>
+                <div class="group-stat-item">
+                    <span class="stat-icon">✅</span>
+                    <div class="stat-label">% de Acierto</div>
+                    <div class="stat-value" id="groupPercentage">-%</div>
+                </div>
+                <div class="group-stat-item">
+                    <span class="stat-icon">🥇</span>
+                    <div class="stat-label">Puesto Global</div>
+                    <div class="stat-value" id="groupGlobalRanking">- / -</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Tabla de Jugadores del Grupo -->
+        <div class="stats-block">
+            <h2 class="block-title">🏆 Jugadores de tu Grupo</h2>
+            <table class="players-table">
+                <thead>
+                    <tr>
+                        <th>Puesto</th>
+                        <th>Nombre</th>
+                        <th>Intentos</th>
+                        <th>% Acierto</th>
+                    </tr>
+                </thead>
+                <tbody id="playersTableBody">
+                    <!-- Las filas se generarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 4. Ranking de Grupos -->
+        <div class="stats-block">
+            <h2 class="block-title">🏆 Ranking de Grupos</h2>
+            
+            <!-- Podium para Top 3 -->
+            <div class="podium-container" id="podiumContainer">
+                <!-- Se genera dinámicamente -->
+            </div>
+            
+            <!-- Lista completa del ranking -->
+            <div class="ranking-list" id="rankingList">
+                <!-- Se genera dinámicamente -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Datos de ejemplo (reemplazar con datos reales del JSON)
+        const statsData = {
+            "jugador": "Carlos",
+            "grupo": "Team1",
+            "intentosJugador": 6,
+            "porcentajeJugador": 66.7,
+            "rankingJugadorGlobal": 3,
+            "rankingJugadorEnGrupo": 1,
+            "intentosGrupo": 20,
+            "porcentajeGrupo": 60.0,
+            "rankingGrupoGlobal": 2,
+            "totalJugadores": 15,
+            "totalGrupos": 4,
+            "rankingGrupos": [
+                { "grupo": "Team5", "puesto": 1, "intentos": 26, "porcentaje": 76.9 },
+                { "grupo": "Team1", "puesto": 2, "intentos": 20, "porcentaje": 60.0 },
+                { "grupo": "Team3", "puesto": 3, "intentos": 18, "porcentaje": 50.0 },
+                { "grupo": "Team2", "puesto": 4, "intentos": 14, "porcentaje": 35.7 }
+            ],
+            "rankingJugadoresDelGrupo": [
+                { "jugador": "Carlos", "puesto": 1, "intentos": 6, "porcentaje": 66.7 },
+                { "jugador": "Ana", "puesto": 2, "intentos": 5, "porcentaje": 60.0 },
+                { "jugador": "Luis", "puesto": 3, "intentos": 4, "porcentaje": 25.0 }
+            ]
+        };
+
+        // Función para cargar los datos en la página
+        function loadStats(data) {
+            // Resumen Personal
+            document.getElementById('playerName').textContent = data.jugador;
+            document.getElementById('playerAttempts').textContent = data.intentosJugador;
+            document.getElementById('playerPercentage').textContent = data.porcentajeJugador + '%';
+            document.getElementById('globalRanking').textContent = `${data.rankingJugadorGlobal} / ${data.totalJugadores}`;
+            document.getElementById('groupRanking').textContent = `${data.rankingJugadorEnGrupo} / ${data.rankingJugadoresDelGrupo.length}`;
+
+            // Resumen del Grupo
+            document.getElementById('groupName').textContent = data.grupo;
+            document.getElementById('groupAttempts').textContent = data.intentosGrupo;
+            document.getElementById('groupPercentage').textContent = data.porcentajeGrupo + '%';
+            document.getElementById('groupGlobalRanking').textContent = `${data.rankingGrupoGlobal} / ${data.totalGrupos}`;
+
+            // Ranking de Grupos (reemplazando gráfico de barras)
+            generateRanking(data.rankingGrupos, data.grupo);
+
+            // Tabla de Jugadores
+            generatePlayersTable(data.rankingJugadoresDelGrupo, data.jugador);
+        }
+
+        function generateRanking(grupos, currentGroup) {
+            generatePodium(grupos, currentGroup);
+            generateRankingList(grupos, currentGroup);
+        }
+
+        function generatePodium(grupos, currentGroup) {
+            const podiumContainer = document.getElementById('podiumContainer');
+            podiumContainer.innerHTML = '';
+
+            // Solo los top 3
+            const top3 = grupos.slice(0, 3);
+            
+            // Reorganizar para el podium visual: 2do, 1ro, 3ro
+            const podiumOrder = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : 
+                                top3.length >= 2 ? [top3[1], top3[0]] : 
+                                [top3[0]];
+
+            podiumOrder.forEach((grupo, index) => {
+                if (!grupo) return;
+
+                const podiumStep = document.createElement('div');
+                podiumStep.className = 'podium-step';
+
+                const realPosition = grupo.puesto;
+                const positionClass = realPosition === 1 ? 'first' : realPosition === 2 ? 'second' : 'third';
+                const medal = realPosition === 1 ? '🥇' : realPosition === 2 ? '🥈' : '🥉';
+                const baseHeight = realPosition === 1 ? 'first' : realPosition === 2 ? 'second' : 'third';
+
+                let teamClass = positionClass;
+                if (grupo.grupo === currentGroup) {
+                    teamClass += ' current';
+                }
+
+                podiumStep.innerHTML = `
+                    <div class="podium-team ${teamClass}">
+                        <div class="podium-medal">${medal}</div>
+                        <div class="podium-name">${grupo.grupo}</div>
+                        <div class="podium-percentage">${grupo.porcentaje}%</div>
+                    </div>
+                    <div class="podium-base ${baseHeight}">#${realPosition}</div>
+                `;
+
+                podiumContainer.appendChild(podiumStep);
+            });
+        }
+
+        function generateRankingList(grupos, currentGroup) {
+            const rankingList = document.getElementById('rankingList');
+            rankingList.innerHTML = '<h3 style="margin-bottom: 15px; color: #4a5568;">📊 Clasificación Completa</h3>';
+
+            grupos.forEach(grupo => {
+                const rankingItem = document.createElement('div');
+                rankingItem.className = 'ranking-item';
+                
+                if (grupo.grupo === currentGroup) {
+                    rankingItem.classList.add('current-group');
+                }
+
+                const medal = grupo.puesto <= 3 ? 
+                    (grupo.puesto === 1 ? '🥇' : grupo.puesto === 2 ? '🥈' : '🥉') : '';
+
+                rankingItem.innerHTML = `
+                    <div class="ranking-position ${grupo.puesto <= 3 ? 'top3' : ''}">#${grupo.puesto}</div>
+                    <div class="ranking-info">
+                        <div style="display: flex; align-items: center;">
+                            <span class="ranking-medal">${medal}</span>
+                            <span class="ranking-name">${grupo.grupo}</span>
+                        </div>
+                        <div class="ranking-stats">
+                            <div class="ranking-stat">
+                                <div class="ranking-stat-value">${grupo.porcentaje}%</div>
+                                <div class="ranking-stat-label">Acierto</div>
+                            </div>
+                            <div class="ranking-stat">
+                                <div class="ranking-stat-value">${grupo.intentos}</div>
+                                <div class="ranking-stat-label">Intentos</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                rankingList.appendChild(rankingItem);
+            });
+        }
+
+        function generatePlayersTable(players, currentPlayer) {
+            const tbody = document.getElementById('playersTableBody');
+            tbody.innerHTML = '';
+
+            players.forEach(player => {
+                const row = document.createElement('tr');
+                if (player.jugador === currentPlayer) {
+                    row.classList.add('current-player');
+                }
+
+                const positionBadge = getPositionBadge(player.puesto);
+
+                row.innerHTML = `
+                    <td>${positionBadge}</td>
+                    <td>${player.jugador}</td>
+                    <td>${player.intentos}</td>
+                    <td>${player.porcentaje}%</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function getPositionBadge(position) {
+            let className = 'position-other';
+            if (position === 1) className = 'position-1';
+            else if (position === 2) className = 'position-2';
+            else if (position === 3) className = 'position-3';
+
+            return `<span class="position-badge ${className}">${position}</span>`;
+        }
+
+        // Función asíncrona para obtener los datos (reemplaza con tu implementación)
+        async function fetchStatsData() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const jugador = params.get('jugador');
+                const grupo = params.get('grupo');
+
+                const API_URL = "https://script.google.com/macros/s/AKfycby_db9YJUD3usHh_PigOISOeuh_vlGIqJnK38W1dLP9biwf8A3mQ6VUJnkBOEDrh-KVsA/exec"; // ← tu nueva URL
+
+                const url = `${API_URL}?jugador=${jugador}&grupo=${grupo}`;
+                const res = await fetch(url);
+                const statsData = await res.json();
+                return statsData;
+                
+            } catch (error) {
+                console.error('Error al obtener las estadísticas:', error);
+                // Retornar datos por defecto en caso de error
+                return {
+                    jugador: "Error",
+                    grupo: "N/A",
+                    intentosJugador: 0,
+                    porcentajeJugador: 0,
+                    rankingJugadorGlobal: 0,
+                    rankingJugadorEnGrupo: 0,
+                    intentosGrupo: 0,
+                    porcentajeGrupo: 0,
+                    rankingGrupoGlobal: 0,
+                    totalJugadores: 0,
+                    totalGrupos: 0,
+                    rankingGrupos: [],
+                    rankingJugadoresDelGrupo: []
+                };
+            }
+        }
+
+        // Función para mostrar estado de carga
+        function showLoading() {
+            // Crear overlay de loading sin reemplazar el HTML
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'loadingOverlay';
+            loadingOverlay.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(102, 126, 234, 0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; color: white;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">📊</div>
+                        <h2>Cargando estadísticas...</h2>
+                        <div style="margin-top: 20px;">
+                            <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite;"></div>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    @keyframes spin { to { transform: rotate(360deg); } }
+                </style>
+            `;
+            document.body.appendChild(loadingOverlay);
+        }
+
+        // Función para ocultar loading
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.remove();
+            }
+        }
+
+        // Función para mostrar error
+        function showError(error) {
+            hideLoading(); // Quitar loading primero
+            
+            const errorOverlay = document.createElement('div');
+            errorOverlay.id = 'errorOverlay';
+            errorOverlay.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(220, 38, 38, 0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; color: white;">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">❌</div>
+                        <h2>Error al cargar estadísticas</h2>
+                        <p style="margin-top: 10px; opacity: 0.8;">${error.message || 'Error desconocido'}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: white; color: #333; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                            Reintentar
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(errorOverlay);
+        }
+
+        // Cargar los datos al cargar la página
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Mostrar estado de carga
+                showLoading();
+                
+                // Obtener datos de forma asíncrona
+                const data = await fetchStatsData();
+                
+                // Ocultar loading
+                hideLoading();
+                
+                // Cargar los datos (ahora los elementos HTML siguen existiendo)
+                loadStats(data);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error);
+            }
+        });
+    </script>
+</body>
+</html>
