@@ -5,86 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>¿Qué Calle Es?</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    .image-container .image-card img {
+      max-width: 100%;
+      max-height: 100%;
+      height: auto;
+      width: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    
-    body {
-      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-      color: #fff;
-      min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      overflow-x: hidden;
-    }
-    
-    .container {
-      width: 100%;
-      max-width: 500px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    
-    header {
-      text-align: center;
-      padding: 15px;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
-    
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 5px;
-      color: #FFD700;
-    }
-    
-    .game-info {
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 15px;
-      padding: 15px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      text-align: center;
-    }
-    
-    .image-container {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin: 15px 0;
-    }
-    
-    .image-card {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .image-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      display: block;
-    }
-    
+
     .image-label {
-      padding: 8px;
-      text-align: center;
-      font-size: 0.9rem;
-      background: rgba(0, 0, 0, 0.5);
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #333;
+        margin: 1rem 0;
     }
-    
+
     .form-container {
       background: rgba(0, 0, 0, 0.4);
       border-radius: 15px;
@@ -92,31 +32,25 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
-    
+
     .input-group {
       margin-bottom: 15px;
     }
-    
+
     .input-group label {
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
     }
-    
+
     .input-group input {
       width: 100%;
       padding: 12px;
       border-radius: 10px;
-      border: none;
       background: rgba(255, 255, 255, 0.1);
-      color: white;
       font-size: 1rem;
     }
-    
-    .input-group input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-    }
-    
+
     .submit-btn {
       width: 100%;
       padding: 14px;
@@ -129,7 +63,7 @@
       cursor: pointer;
       margin-top: 10px;
     }
-    
+
     .result-container {
       background: rgba(0, 0, 0, 0.4);
       border-radius: 15px;
@@ -139,73 +73,58 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
-    
+
     .correct {
       color: #7cffa0;
     }
-    
+
     .incorrect {
       color: #ff9aa3;
     }
-    
-    .stats-link {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 15px;
-      background: rgba(30, 136, 229, 0.3);
-      color: #a3d5ff;
-      border-radius: 8px;
-      text-decoration: none;
-    }
-    
-    @media (min-width: 768px) {
-      .container {
-        max-width: 600px;
-      }
-      
-      .image-card img {
-        height: 220px;
-      }
-    }
+
   </style>
+
 </head>
 <body>
   <div class="container">
-    <header>
+    <div class="header">
       <h1><i class="fas fa-map-marked-alt"></i> ¿QUÉ CALLE ES?</h1>
       <p>Adivina la calle basándote en las imágenes</p>
-    </header>
-    
-    <div class="game-info">
-      <div class="image-container" id="images-container">
-        <!-- Las imágenes se cargarán aquí dinámicamente -->
-      </div>
     </div>
-    
-    <div class="form-container">
+
+    <div class="stats-block">
+        <h2 class="block-title">Imágenes de la calle</h2>
+        <div class="image-container" id="images-container">
+          <!-- Las imágenes se cargarán aquí dinámicamente -->
+        </div>
+        <button id="ver-mapa-btn" class="btn" style="margin-top:1rem;">¿Necesitas ayuda? Ver mapa (penaliza 50%)</button>
+    </div>
+
+    <div class="stats-block">
+      <h2 class="block-title">Introduce tus datos</h2>
       <form id="guessForm">
         <div class="input-group">
           <label for="playerName"><i class="fas fa-user"></i> Tu Nombre</label>
           <input type="text" id="playerName" name="playerName" placeholder="Escribe tu nombre" required>
         </div>
-        
+
         <div class="input-group">
           <label for="groupName"><i class="fas fa-users"></i> Peña</label>
           <input type="text" id="groupName" name="groupName" placeholder="Nombre de tu grupo" required>
         </div>
-        
+
         <div class="input-group">
           <label for="guess"><i class="fas fa-map-signs"></i> ¿Qué calle es?</label>
           <input type="text" id="guess" name="guess" placeholder="Escribe el nombre de la calle" required>
           <small style="display:block; margin-top:5px; opacity:0.7;">(Sin "Calle", "Calle del", etc.)</small>
         </div>
-        
+
         <button type="submit" class="submit-btn">
           <i class="fas fa-paper-plane"></i> ENVIAR RESPUESTA
         </button>
       </form>
     </div>
-    
+
     <div class="result-container">
       <p id="result">Esperando tu respuesta...</p>
     </div>
@@ -214,32 +133,63 @@
   <script>
     // Base de datos de lugares con sus carpetas
     const lugares = [
-      { nombre: "Calle Travesia del Cerro", carpeta: "travesia_cerro" },
-      { nombre: "Calle del Pozo", carpeta: "pozo" },
-      { nombre: "Gran Vía", carpeta: "gran_via" },
-      { nombre: "Calle Mayor", carpeta: "calle_mayor" }
+      { label: "Avenida de cuatro vientos", nombre: "Cuatro vientos", carpeta: "cuatro_vientos" },
+      { label: "Calle de la Laguna", nombre: "Laguna", carpeta: "laguna" },
+      { label: "Calle de la Reina", nombre: "Reina", carpeta: "reina" },
+      { label: "Calle del Arco", nombre: "Arco", carpeta: "arco" },
+      { label: "Calle Travesia del Cerro", nombre: "Travesia del Cerro", carpeta: "travesia_cerro" },
+      { label: "Calle del Pozo", nombre: "Pozo", carpeta: "pozo" },
+      // { nombre: "Gran Vía", carpeta: "gran_via" },
+      // { nombre: "Calle Mayor", carpeta: "calle_mayor" }
       // Añade más lugares según tu estructura de carpetas
     ];
 
     // Selecciona un lugar aleatorio
     const lugarActual = lugares[Math.floor(Math.random() * lugares.length)];
-    
+    let ayudaUsada = false;
+
+
     // Carga las imágenes del lugar seleccionado
+    // const imagesContainer = document.getElementById('images-container');
+    // imagesContainer.innerHTML = `
+    //   <div class="image-card">
+    //     <div class="image-label">Vista de la calle</div>
+    //     <img src="/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.nombre}">
+    //   </div>
+    //   <div class="image-card">
+    //     <div class="image-label">Otra perspectiva</div>
+    //     <img src="/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.nombre}">
+    //   </div>
+    //   <div class="image-card">
+    //     <div class="image-label">Vista del mapa</div>
+    //     <img src="/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.nombre}">
+    //   </div>
+    // `;
     const imagesContainer = document.getElementById('images-container');
     imagesContainer.innerHTML = `
       <div class="image-card">
-        <img src="/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.nombre}">
         <div class="image-label">Vista de la calle</div>
+        <img src="/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}">
       </div>
       <div class="image-card">
-        <img src="/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.nombre}">
         <div class="image-label">Otra perspectiva</div>
-      </div>
-      <div class="image-card">
-        <img src="/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.nombre}">
-        <div class="image-label">Vista del mapa</div>
+        <img src="/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}">
       </div>
     `;
+
+    document.getElementById('ver-mapa-btn').addEventListener('click', () => {
+      const mapaHTML = `
+        <div class="image-card">
+          <div class="image-label">Vista del mapa</div>
+          <img src="/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}">
+        </div>
+      `;
+      imagesContainer.insertAdjacentHTML('beforeend', mapaHTML);
+      document.getElementById('ver-mapa-btn').disabled = true;
+      ayudaUsada = true;
+    });
+
+
 
     // Maneja el envío del formulario
     const form = document.getElementById("guessForm");
@@ -251,21 +201,24 @@
       const playerName = document.getElementById("playerName").value.trim();
       const groupName = document.getElementById("groupName").value.trim();
       let userGuess = document.getElementById("guess").value.trim();
-      
+
       // Limpia prefijos comunes de calles
-      userGuess = userGuess.replace(/^(calle|calle del|calle el|calle de la|calle de los)\s+/i, '');
+      userGuess = userGuess.replace(/^(calle|calle del|calle el|calle de la|calle de los|avenida de los|avenida de|avenida del)\s+/i, '');
       userGuess = userGuess.toLowerCase();
-      
+
       const respuestaCorrecta = lugarActual.nombre.toLowerCase();
       const correct = userGuess === respuestaCorrecta;
+
+      let puntuacion = 0.0;
+      if (respuestaCorrecta) puntuacion = ayudaUsada ? 0.5 : 1.0;
 
       // Muestra resultado
       if (correct) {
         resultText.innerHTML = `<span class="correct"><i class="fas fa-check-circle"></i> ¡CORRECTO! Es ${lugarActual.nombre}</span>`;
       } else {
-        resultText.innerHTML = `<span class="incorrect"><i class="fas fa-times-circle"></i> INCORRECTO. Era: ${lugarActual.nombre}</span>`;
+        resultText.innerHTML = `<span class="incorrect"><i class="fas fa-times-circle"></i> INCORRECTO. Era: ${lugarActual.label}</span>`;
       }
-      
+
       // Añade enlace a estadísticas
       resultText.innerHTML += `
         <a href="stats.html?jugador=${encodeURIComponent(playerName)}&grupo=${encodeURIComponent(groupName)}" class="stats-link">
@@ -283,7 +236,7 @@
             player: playerName,
             group: groupName,
             guess: userGuess,
-            correct: correct,
+            score: puntuacion,
             actual: lugarActual.nombre,
             timestamp: new Date().toISOString()
           })
@@ -294,7 +247,7 @@
 
       // Limpia el formulario
       form.reset();
-      
+
       // Recarga una nueva ubicación después de 3 segundos
       setTimeout(() => {
         window.location.reload();

@@ -451,17 +451,17 @@
                     </div>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-icon">🧪</span>
-                    <div class="stat-content">
-                        <div class="stat-label">Intentos</div>
-                        <div class="stat-value" id="playerAttempts">-</div>
-                    </div>
-                </div>
-                <div class="stat-item">
                     <span class="stat-icon">✅</span>
                     <div class="stat-content">
                         <div class="stat-label">% de Acierto</div>
                         <div class="stat-value" id="playerPercentage">-%</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">💯</span>
+                    <div class="stat-content">
+                        <div class="stat-label">Puntuación</div>
+                        <div class="stat-value" id="playerScore">-</div>
                     </div>
                 </div>
                 <div class="stat-item">
@@ -474,7 +474,7 @@
                 <div class="stat-item">
                     <span class="stat-icon">🧑‍🤝‍🧑</span>
                     <div class="stat-content">
-                        <div class="stat-label">Puesto en Grupo</div>
+                        <div class="stat-label">Puesto en Peña</div>
                         <div class="stat-value" id="groupRanking">- / -</div>
                     </div>
                 </div>
@@ -483,22 +483,22 @@
 
         <!-- 2. Resumen del Grupo -->
         <div class="stats-block">
-            <h2 class="block-title">👥 Resumen del Grupo</h2>
+            <h2 class="block-title">👥 Resumen de la Peña</h2>
             <div class="group-stats">
                 <div class="group-stat-item">
                     <span class="stat-icon">🏷️</span>
-                    <div class="stat-label">Grupo</div>
+                    <div class="stat-label">Peña</div>
                     <div class="stat-value" id="groupName">-</div>
-                </div>
-                <div class="group-stat-item">
-                    <span class="stat-icon">🧪</span>
-                    <div class="stat-label">Intentos Totales</div>
-                    <div class="stat-value" id="groupAttempts">-</div>
                 </div>
                 <div class="group-stat-item">
                     <span class="stat-icon">✅</span>
                     <div class="stat-label">% de Acierto</div>
                     <div class="stat-value" id="groupPercentage">-%</div>
+                </div>
+                <div class="group-stat-item">
+                    <span class="stat-icon">💯</span>
+                    <div class="stat-label">Puntuación</div>
+                    <div class="stat-value" id="groupScore">-</div>
                 </div>
                 <div class="group-stat-item">
                     <span class="stat-icon">🥇</span>
@@ -510,14 +510,14 @@
 
         <!-- 3. Tabla de Jugadores del Grupo -->
         <div class="stats-block">
-            <h2 class="block-title">🏆 Jugadores de tu Grupo</h2>
+            <h2 class="block-title">🏆 Jugadores de tu Peña</h2>
             <table class="players-table">
                 <thead>
                     <tr>
                         <th>Puesto</th>
                         <th>Nombre</th>
-                        <th>Intentos</th>
                         <th>% Acierto</th>
+                        <th>Puntuación</th>
                     </tr>
                 </thead>
                 <tbody id="playersTableBody">
@@ -528,7 +528,7 @@
 
         <!-- 4. Ranking de Grupos -->
         <div class="stats-block">
-            <h2 class="block-title">🏆 Ranking de Grupos</h2>
+            <h2 class="block-title">🏆 Ranking de Peñas</h2>
             
             <!-- Podium para Top 3 -->
             <div class="podium-container" id="podiumContainer">
@@ -544,45 +544,21 @@
     </div>
 
     <script>
-        // Datos de ejemplo (reemplazar con datos reales del JSON)
-        const statsData = {
-            "jugador": "Carlos",
-            "grupo": "Team1",
-            "intentosJugador": 6,
-            "porcentajeJugador": 66.7,
-            "rankingJugadorGlobal": 3,
-            "rankingJugadorEnGrupo": 1,
-            "intentosGrupo": 20,
-            "porcentajeGrupo": 60.0,
-            "rankingGrupoGlobal": 2,
-            "totalJugadores": 15,
-            "totalGrupos": 4,
-            "rankingGrupos": [
-                { "grupo": "Team5", "puesto": 1, "intentos": 26, "porcentaje": 76.9 },
-                { "grupo": "Team1", "puesto": 2, "intentos": 20, "porcentaje": 60.0 },
-                { "grupo": "Team3", "puesto": 3, "intentos": 18, "porcentaje": 50.0 },
-                { "grupo": "Team2", "puesto": 4, "intentos": 14, "porcentaje": 35.7 }
-            ],
-            "rankingJugadoresDelGrupo": [
-                { "jugador": "Carlos", "puesto": 1, "intentos": 6, "porcentaje": 66.7 },
-                { "jugador": "Ana", "puesto": 2, "intentos": 5, "porcentaje": 60.0 },
-                { "jugador": "Luis", "puesto": 3, "intentos": 4, "porcentaje": 25.0 }
-            ]
-        };
 
         // Función para cargar los datos en la página
         function loadStats(data) {
             // Resumen Personal
             document.getElementById('playerName').textContent = data.jugador;
-            document.getElementById('playerAttempts').textContent = data.intentosJugador;
+            // document.getElementById('playerAttempts').textContent = data.intentosJugador;
             document.getElementById('playerPercentage').textContent = data.porcentajeJugador + '%';
+            document.getElementById('playerScore').textContent = data.scoreJugador;
             document.getElementById('globalRanking').textContent = `${data.rankingJugadorGlobal} / ${data.totalJugadores}`;
             document.getElementById('groupRanking').textContent = `${data.rankingJugadorEnGrupo} / ${data.rankingJugadoresDelGrupo.length}`;
 
             // Resumen del Grupo
             document.getElementById('groupName').textContent = data.grupo;
-            document.getElementById('groupAttempts').textContent = data.intentosGrupo;
             document.getElementById('groupPercentage').textContent = data.porcentajeGrupo + '%';
+            document.getElementById('groupScore').textContent = data.scoreGrupo;
             document.getElementById('groupGlobalRanking').textContent = `${data.rankingGrupoGlobal} / ${data.totalGrupos}`;
 
             // Ranking de Grupos (reemplazando gráfico de barras)
@@ -629,7 +605,7 @@
                     <div class="podium-team ${teamClass}">
                         <div class="podium-medal">${medal}</div>
                         <div class="podium-name">${grupo.grupo}</div>
-                        <div class="podium-percentage">${grupo.porcentaje}%</div>
+                        <div class="podium-score">${grupo.score}</div>
                     </div>
                     <div class="podium-base ${baseHeight}">#${realPosition}</div>
                 `;
@@ -666,8 +642,8 @@
                                 <div class="ranking-stat-label">Acierto</div>
                             </div>
                             <div class="ranking-stat">
-                                <div class="ranking-stat-value">${grupo.intentos}</div>
-                                <div class="ranking-stat-label">Intentos</div>
+                                <div class="ranking-stat-value">${grupo.score}</div>
+                                <div class="ranking-stat-label">Puntuación</div>
                             </div>
                         </div>
                     </div>
