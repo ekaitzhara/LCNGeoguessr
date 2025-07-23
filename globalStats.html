@@ -563,7 +563,7 @@
                 const baseHeight = realPosition === 1 ? 'first' : realPosition === 2 ? 'second' : 'third';
 
                 podiumStep.innerHTML = `
-                    <div class="podium-team">
+                    <div class="podium-team ${positionClass}">
                         <div class="podium-medal">${medal}</div>
                         <div class="podium-name">${grupo.grupo}</div>
                         <div class="podium-score">${grupo.score}</div>
