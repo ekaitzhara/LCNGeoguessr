@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estadísticas del Jugador</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -142,7 +143,7 @@
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            margin-bottom: 30px;
+            margin: 30px 0;
             height: 200px;
             gap: 10px;
         }
@@ -153,6 +154,7 @@
             align-items: center;
             min-width: 100px;
             position: relative;
+            margin-top: 1rem;
         }
 
         .podium-team {
@@ -357,6 +359,28 @@
             font-weight: bold;
             font-size: 0.8rem;
             color: white;
+        }
+
+        .action-button {
+          width: 60%;
+          padding: 14px;
+          border: none;
+          border-radius: 10px;
+          background: linear-gradient(to right, #46d1cb, #138a85);
+          cursor: pointer;
+          transition: background 0.3s ease, transform 0.2s ease;
+          margin: 5px auto;
+        }
+
+        .stats-btn {
+          display: block;
+          width: 100%;
+          color: #1a202c;
+          font-size: 1rem;
+          font-weight: bold;
+          text-decoration: none;    /* quita el subrayado */
+          text-align: center;
+          user-select: none;        /* evita selección de texto extra */
         }
 
         .position-1 { background: #ffd700; color: #333; }
@@ -567,6 +591,15 @@
             </div>
         </div>
 
+        <div class="stats-block" id="stats-global-container">
+          <h2 class="block-title">Quién irá ganando?</h2>
+          <div class="action-button" style="width: 100%">
+            <a id="stats-global-link" href="globalStats.html" class="btn stats-btn">
+              <i class="fa-solid fa-ranking-star"></i> ESTADÍSTICAS GLOBALES
+            </a>
+          </div>
+        </div>
+
     </div>
 
     <script>
@@ -694,8 +727,8 @@
                 row.innerHTML = `
                     <td>${positionBadge}</td>
                     <td>${player.jugador}</td>
-                    <td>${player.intentos}</td>
                     <td>${player.porcentaje}%</td>
+                    <td>${player.scoreTotal}</td>
                 `;
 
                 tbody.appendChild(row);

@@ -25,6 +25,20 @@
         margin: 1rem 0;
     }
 
+    .reveal-map-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(to right, #FFD700, #FFA500);
+      color: #1a202c;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+
     .form-container {
       background: rgba(0, 0, 0, 0.4);
       border-radius: 15px;
@@ -56,12 +70,13 @@
       padding: 14px;
       border: none;
       border-radius: 10px;
-      background: linear-gradient(to right, #FFD700, #FFA500);
+      background: linear-gradient(to right, #61c664, #00b608);
       color: #1a202c;
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
       margin-top: 10px;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
 
     .result-container {
@@ -82,12 +97,46 @@
       color: #ff9aa3;
     }
 
+    .action-button {
+      width: 60%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(to right, #46d1cb, #138a85);
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin: 5px auto;
+    }
+
+    .stats-btn {
+      display: block;
+      width: 100%;
+      color: #1a202c;
+      font-size: 1rem;
+      font-weight: bold;
+      text-decoration: none;    /* quita el subrayado */
+      text-align: center;
+      user-select: none;        /* evita selección de texto extra */
+    }
+
+    /*.stats-link {*/
+    /*  color: #1a202c;*/
+    /*  font-size: 1rem;*/
+    /*  font-weight: bold;*/
+    /*  text-decoration: none;    !* quita el subrayado *!*/
+    /*  text-align: center;*/
+    /*  user-select: none;        !* evita selección de texto extra *!*/
+    /*}*/
+
   </style>
 
 </head>
 <body>
+
+
   <div class="container">
     <div class="header">
+      <img src="https://raw.githubusercontent.com/ekaitzhara/LCNGeoguessr/refs/heads/main/img/Logo_LCN.png" alt="Logo LCN" class="logo-img">
       <h1><i class="fas fa-map-marked-alt"></i> ¿QUÉ CALLE ES?</h1>
       <p>Adivina la calle basándote en las imágenes</p>
     </div>
@@ -97,7 +146,7 @@
         <div class="image-container" id="images-container">
           <!-- Las imágenes se cargarán aquí dinámicamente -->
         </div>
-        <button id="ver-mapa-btn" class="btn" style="margin-top:1rem;">¿Necesitas ayuda? Ver mapa (penaliza 50%)</button>
+        <button id="ver-mapa-btn" class="btn reveal-map-btn" style="margin-top:1rem;">¿Necesitas ayuda? Puedes ver el mapa (penaliza 50%)</button>
     </div>
 
     <div class="stats-block">
@@ -119,14 +168,30 @@
           <small style="display:block; margin-top:5px; opacity:0.7;">(Sin "Calle", "Calle del", etc.)</small>
         </div>
 
-        <button type="submit" class="submit-btn">
+        <button type="submit" class="submit-btn" id="submit-btn">
           <i class="fas fa-paper-plane"></i> ENVIAR RESPUESTA
         </button>
       </form>
     </div>
 
-    <div class="result-container">
-      <p id="result">Esperando tu respuesta...</p>
+    <div class="result-container stats-block" id="result-container" style="display: none;">
+      <div id="result-message" class="result-message" style="font-size:1.2rem; margin-bottom:1rem;">
+        <!-- Aquí se inyecta “¡CORRECTO!” o “INCORRECTO…” -->
+      </div>
+      <div class="action-button">
+        <a id="stats-link" href="#" class="btn stats-btn">
+          <i class="fas fa-chart-bar"></i> TUS ESTADÍSTICAS
+        </a>
+      </div>
+    </div>
+
+    <div class="stats-block" id="stats-global-container">
+      <h2 class="block-title">Quién irá ganando?</h2>
+      <div class="action-button" style="width: 100%">
+        <a id="stats-global-link" href="globalStats.html" class="btn stats-btn">
+          <i class="fa-solid fa-ranking-star"></i> ESTADÍSTICAS GLOBALES
+        </a>
+      </div>
     </div>
   </div>
 
@@ -194,7 +259,7 @@
 
     // Maneja el envío del formulario
     const form = document.getElementById("guessForm");
-    const resultText = document.getElementById("result");
+    const resultText = document.getElementById("result-message");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -221,11 +286,18 @@
       }
 
       // Añade enlace a estadísticas
-      resultText.innerHTML += `
-        <a href="stats.html?jugador=${encodeURIComponent(playerName)}&grupo=${encodeURIComponent(groupName)}" class="stats-link">
-          Ver estadísticas
-        </a>
-      `;
+      const link = document.getElementById("stats-link");
+      link.href = `stats.html?jugador=${encodeURIComponent(playerName)}&grupo=${encodeURIComponent(groupName)}`;
+      //    resultText.innerHTML     +=`
+      //   <a href="stats.html?jugador=${encodeURIComponent(playerName)}&grupo=${encodeURIComponent(groupName)}" class="stats-link">
+      //     Ver estadísticas
+      //   </a>
+      // `;
+
+      // Ocultar el botón de enviar
+      document.getElementById("submit-btn").style.display = "none";
+      // Mostrar el contenedor de resultados
+      document.getElementById("result-container").style.display = "block";
 
       // Envía datos a Google Apps Script
       try {
@@ -246,13 +318,6 @@
         console.error("Error al enviar datos:", error);
       }
 
-      // Limpia el formulario
-      form.reset();
-
-      // Recarga una nueva ubicación después de 3 segundos
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
     });
   </script>
 </body>
