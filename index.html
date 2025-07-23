@@ -269,7 +269,7 @@
       let userGuess = document.getElementById("guess").value.trim();
 
       // Limpia prefijos comunes de calles
-      userGuess = userGuess.replace(/^(calle|calle del|calle el|calle de la|calle de los|avenida de los|avenida de|avenida del)\s+/i, '');
+      userGuess = userGuess.replace(/^(calle del|calle el|calle de la|calle de los|calle|avenida de los|avenida de|avenida del|avenida)\s+/i, '');
       userGuess = userGuess.toLowerCase();
 
       const respuestaCorrecta = lugarActual.nombre.toLowerCase();
