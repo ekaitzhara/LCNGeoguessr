@@ -98,25 +98,43 @@
         }
 
         /* Resumen del Grupo */
+        /* Resumen del Grupo - Reemplazar los estilos existentes */
         .group-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
 
         .group-stat-item {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
             border-radius: 10px;
-            border: 2px solid #fc8181;
+            border-left: 4px solid #667eea;
         }
 
         .group-stat-item .stat-icon {
-            display: block;
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #e53e3e;
+            font-size: 1.5rem;
+            margin-right: 10px;
+            width: 30px;
+            color: #667eea;
+        }
+
+        .group-stat-item .stat-content {
+            flex: 1;
+        }
+
+        .group-stat-item .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .group-stat-item .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
         }
 
         /* Podium Styles */
@@ -451,7 +469,7 @@
                     </div>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-icon">✅</span>
+                    <span class="stat-icon">🎯</span>
                     <div class="stat-content">
                         <div class="stat-label">% de Acierto</div>
                         <div class="stat-value" id="playerPercentage">-%</div>
@@ -486,24 +504,32 @@
             <h2 class="block-title">👥 Resumen de la Peña</h2>
             <div class="group-stats">
                 <div class="group-stat-item">
-                    <span class="stat-icon">🏷️</span>
-                    <div class="stat-label">Peña</div>
-                    <div class="stat-value" id="groupName">-</div>
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-content">
+                        <div class="stat-label">Peña</div>
+                        <div class="stat-value" id="groupName">-</div>
+                    </div>
                 </div>
                 <div class="group-stat-item">
-                    <span class="stat-icon">✅</span>
-                    <div class="stat-label">% de Acierto</div>
-                    <div class="stat-value" id="groupPercentage">-%</div>
+                    <span class="stat-icon">🎯</span>
+                    <div class="stat-content">
+                        <div class="stat-label">% de Acierto</div>
+                        <div class="stat-value" id="groupPercentage">-%</div>
+                    </div>
                 </div>
                 <div class="group-stat-item">
                     <span class="stat-icon">💯</span>
-                    <div class="stat-label">Puntuación</div>
-                    <div class="stat-value" id="groupScore">-</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Puntuación</div>
+                        <div class="stat-value" id="groupScore">-</div>
+                    </div>
                 </div>
                 <div class="group-stat-item">
-                    <span class="stat-icon">🥇</span>
-                    <div class="stat-label">Puesto Global</div>
-                    <div class="stat-value" id="groupGlobalRanking">- / -</div>
+                    <span class="stat-icon">🏆</span>
+                    <div class="stat-content">
+                        <div class="stat-label">Puesto Global</div>
+                        <div class="stat-value" id="groupGlobalRanking">- / -</div>
+                    </div>
                 </div>
             </div>
         </div>
