@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css" />
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery.min.css">
+
   <style>
     .image-container .image-card img {
       max-width: 100%;
@@ -128,57 +130,6 @@
     /*  user-select: none;        !* evita selección de texto extra *!*/
     /*}*/
 
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backdrop-filter: blur(5px);
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .overlay.hidden {
-      display: none;
-    }
-
-    .zoom-wrapper {
-      position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      overflow: hidden;
-      touch-action: none;
-      border-radius: 10px;
-    }
-
-    #overlay-img {
-      width: 100%;
-      height: auto;
-      transform-origin: center center;
-      will-change: transform;
-      user-select: none;
-      touch-action: none;
-    }
-
-    #close-overlay {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(255, 255, 255, 0.8);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-
   </style>
 
 </head>
@@ -246,16 +197,6 @@
     </div>
   </div>
 
-  <!-- Overlay para ver imagen ampliada -->
-  <div id="image-overlay" class="overlay hidden">
-    <div class="overlay-background" onclick="cerrarOverlay()"></div>
-    <div class="zoom-wrapper">
-      <img id="overlay-img" src="" alt="Imagen ampliada">
-      <button id="close-overlay" onclick="cerrarOverlay()">✕</button>
-    </div>
-  </div>
-
-
   <script>
     // Base de datos de lugares con sus carpetas
     const lugares = [
@@ -296,14 +237,17 @@
     // `;
     const imgsPath = 'https://raw.githubusercontent.com/ekaitzhara/LCNGeoguessr/refs/heads/main'
     const imagesContainer = document.getElementById('images-container');
+    imagesContainer.classList.add('gallery');
     imagesContainer.innerHTML = `
       <div class="image-card">
         <div class="image-label">Vista de la calle</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
+        <a href="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png">
+            <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}">
+        </a>
       </div>
       <div class="image-card">
         <div class="image-label">Otra perspectiva</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
+        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}">
       </div>
     `;
 
@@ -311,7 +255,7 @@
       const mapaHTML = `
         <div class="image-card">
           <div class="image-label">Vista del mapa</div>
-          <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
+          <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}">
         </div>
       `;
       imagesContainer.insertAdjacentHTML('beforeend', mapaHTML);
@@ -385,81 +329,24 @@
     });
   </script>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script>
+
   <script>
-    const overlay = document.getElementById("image-overlay");
-    const overlayImg = document.getElementById("overlay-img");
-
-    let lastScale = 1;
-    let lastX = 0;
-    let lastY = 0;
-    let startX = 0;
-    let startY = 0;
-    let initialDistance = null;
-
-    function mostrarImagen(src) {
-      overlay.classList.remove("hidden");
-      overlayImg.src = src;
-      resetZoom();
-    }
-
-    function cerrarOverlay() {
-      overlay.classList.add("hidden");
-      resetZoom();
-    }
-
-    function resetZoom() {
-      lastScale = 1;
-      lastX = 0;
-      lastY = 0;
-      overlayImg.style.transform = `scale(1) translate(0px, 0px)`;
-    }
-
-    overlayImg.addEventListener("touchstart", function (e) {
-      if (e.touches.length === 2) {
-        const [t1, t2] = e.touches;
-        initialDistance = Math.hypot(
-          t2.pageX - t1.pageX,
-          t2.pageY - t1.pageY
-        );
-      } else if (e.touches.length === 1 && lastScale > 1) {
-        startX = e.touches[0].clientX - lastX;
-        startY = e.touches[0].clientY - lastY;
-      }
-    });
-
-    overlayImg.addEventListener("touchmove", function (e) {
-      e.preventDefault();
-
-      if (e.touches.length === 2 && initialDistance) {
-        const [t1, t2] = e.touches;
-        const currentDistance = Math.hypot(
-          t2.pageX - t1.pageX,
-          t2.pageY - t1.pageY
-        );
-        let scale = currentDistance / initialDistance;
-        lastScale = Math.min(Math.max(scale, 1), 4);
-      } else if (e.touches.length === 1 && lastScale > 1) {
-        lastX = e.touches[0].clientX - startX;
-        lastY = e.touches[0].clientY - startY;
-
-        // Limita el movimiento
-        const wrapper = overlayImg.parentElement;
-        const wrapperRect = wrapper.getBoundingClientRect();
-        const imgWidth = overlayImg.offsetWidth * lastScale;
-        const imgHeight = overlayImg.offsetHeight * lastScale;
-
-        const maxX = Math.max((imgWidth - wrapperRect.width) / 2, 0);
-        const maxY = Math.max((imgHeight - wrapperRect.height) / 2, 0);
-
-        lastX = Math.max(Math.min(lastX, maxX), -maxX);
-        lastY = Math.max(Math.min(lastY, maxY), -maxY);
-      }
-
-      overlayImg.style.transform = `scale(${lastScale}) translate(${lastX}px, ${lastY}px)`;
-    }, { passive: false });
-
-    overlayImg.addEventListener("touchend", function () {
-      initialDistance = null;
+    document.addEventListener('DOMContentLoaded', () => {
+      lightGallery(document.getElementById('gallery'), {
+        selector: 'a',
+        plugins: [lgZoom],
+        speed: 500,
+        zoom: true,
+        zoomFromOrigin: false,
+        mobileSettings: {
+          controls: false,
+          showCloseIcon: true,
+          showMaximizeIcon: false,
+        }
+      });
     });
   </script>
 
