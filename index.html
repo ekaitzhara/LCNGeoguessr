@@ -7,8 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css" />
 
-  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
-
   <style>
     .image-container .image-card img {
       max-width: 100%;
@@ -130,6 +128,55 @@
     /*  user-select: none;        !* evita selección de texto extra *!*/
     /*}*/
 
+    .image-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+    }
+
+    .image-overlay.hidden {
+      display: none;
+    }
+
+    .overlay-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .overlay-content img {
+      max-width: 100%;
+      max-height: 100%;
+      margin: auto;
+      display: block;
+      touch-action: none; /* permite pinch-to-zoom */
+      transform-origin: center center;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10000;
+    }
+
+
   </style>
 
 </head>
@@ -197,6 +244,14 @@
     </div>
   </div>
 
+  <div id="image-overlay" class="image-overlay hidden">
+    <div class="overlay-content">
+      <button class="close-btn" onclick="cerrarImagen()">✕</button>
+      <img id="overlay-img" src="" alt="Imagen ampliada">
+    </div>
+  </div>
+
+
   <script>
     // Base de datos de lugares con sus carpetas
     const lugares = [
@@ -240,11 +295,11 @@
     imagesContainer.innerHTML = `
       <div class="image-card">
         <div class="image-label">Vista de la calle</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}" class="zoomable" >
+        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
       </div>
       <div class="image-card">
         <div class="image-label">Otra perspectiva</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}" class="zoomable" >
+        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
       </div>
     `;
 
@@ -252,7 +307,7 @@
       const mapaHTML = `
         <div class="image-card">
           <div class="image-label">Vista del mapa</div>
-          <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}" class="zoomable" >
+          <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
         </div>
       `;
       imagesContainer.insertAdjacentHTML('beforeend', mapaHTML);
@@ -327,9 +382,61 @@
   </script>
 
   <script>
-    mediumZoom('.zoomable', {
-      margin: 24,
-      background: '#000'
+    const overlay = document.getElementById('image-overlay');
+    const overlayImg = document.getElementById('overlay-img');
+
+    function mostrarImagen(src) {
+        console.log("Abriendo imagen:", src);
+      overlayImg.src = src;
+      overlay.classList.remove('hidden');
+    }
+
+    function cerrarImagen() {
+      overlay.classList.add('hidden');
+      overlayImg.src = "";
+      resetZoom();
+    }
+
+    // Permite pinch-to-zoom nativo
+    let lastScale = 1;
+    function resetZoom() {
+      overlayImg.style.transform = "scale(1)";
+      lastScale = 1;
+    }
+
+    // Pinch-zoom para móviles
+    overlayImg.addEventListener('touchstart', function (e) {
+      if (e.touches.length === 2) {
+        const [touch1, touch2] = e.touches;
+        overlayImg.initialDistance = Math.hypot(
+          touch2.pageX - touch1.pageX,
+          touch2.pageY - touch1.pageY
+        );
+      }
+    });
+
+    overlayImg.addEventListener('touchmove', function (e) {
+      if (e.touches.length === 2 && overlayImg.initialDistance) {
+        const [touch1, touch2] = e.touches;
+        const currentDistance = Math.hypot(
+          touch2.pageX - touch1.pageX,
+          touch2.pageY - touch1.pageY
+        );
+        const scale = currentDistance / overlayImg.initialDistance;
+        overlayImg.style.transform = `scale(${Math.min(Math.max(scale * lastScale, 1), 4)})`;
+      }
+    });
+
+    overlayImg.addEventListener('touchend', function (e) {
+      if (e.touches.length < 2) {
+        lastScale = parseFloat(overlayImg.style.transform.replace("scale(", "").replace(")", "")) || 1;
+        overlayImg.initialDistance = null;
+      }
+    });
+
+    // Cierra al tocar fuera
+    overlay.addEventListener("click", function(e) {
+      if (e.target === overlay) cerrarImagen();
     });
   </script>
 
