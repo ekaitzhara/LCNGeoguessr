@@ -67,6 +67,14 @@
       font-size: 1rem;
     }
 
+    .input-group select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      font-size: 1rem;
+    }
+
     .submit-btn {
       width: 100%;
       padding: 14px;
@@ -159,9 +167,14 @@
           <input type="text" id="playerName" name="playerName" placeholder="Escribe tu nombre" required>
         </div>
 
-        <div class="input-group">
+        <div class="input-group" id="InputGroupName">
           <label for="groupName"><i class="fas fa-users"></i> Peña</label>
-          <input type="text" id="groupName" name="groupName" placeholder="Nombre de tu grupo" required>
+<!--          <input type="text" id="groupName" name="groupName" placeholder="Nombre de tu grupo" required>-->
+          <select id="groupName" name="groupName" required>
+              <option value="">-- Seleccione un grupo --</option>
+              <!-- Los grupos se cargarán dinámicamente -->
+              <option value="otro">Otro</option>
+          </select>
         </div>
 
         <div class="input-group">
@@ -198,6 +211,9 @@
   </div>
 
   <script>
+    // Script general
+    // --------------
+
     // Base de datos de lugares con sus carpetas
     const lugares = [
       { label: "Avenida de cuatro vientos", nombre: "Cuatro vientos", carpeta: "cuatro_vientos" },
@@ -263,7 +279,10 @@
       `;
       imagesContainer.insertAdjacentHTML('beforeend', mapaHTML);
       document.getElementById('ver-mapa-btn').disabled = true;
+      document.getElementById('ver-mapa-btn').style.display = 'none';
       ayudaUsada = true;
+
+      initLightGallery();
     });
 
 
@@ -336,11 +355,16 @@
   <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.umd.min.js"></script>
 
-
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    // Script para previsualizacion y zoom imagenes
+    // --------------------------------------------
+    let lgInstance = null;
+
+    function initLightGallery() {
+      if (lgInstance) lgInstance.destroy(); // Elimina si ya está iniciado
+
       // lgZoom viene importado por lg-zoom.umd.min.js
-      lightGallery(document.getElementById("images-container"), {
+      lgInstance = lightGallery(document.getElementById("images-container"), {
         selector: 'a',
         plugins: [lgZoom],
         speed: 400,
@@ -351,12 +375,78 @@
         mobileSettings: {
           controls: false,
           showCloseIcon: true,
-          download: false,
+          download: false
         }
       });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initLightGallery();
     });
   </script>
 
+  <script>
+    // Script para obtener los grupos desde el Excel
+    // ---------------------------------------------
 
+    // Función asíncrona para obtener los datos (reemplaza con tu implementación)
+    async function fetchStatsData() {
+        try {
+
+            const API_URL = "https://script.google.com/macros/s/AKfycby_db9YJUD3usHh_PigOISOeuh_vlGIqJnK38W1dLP9biwf8A3mQ6VUJnkBOEDrh-KVsA/exec";
+
+            const res = await fetch(API_URL);
+            const statsData = await res.json();
+            return statsData;
+
+        } catch (error) {
+            console.error('Error al obtener las estadísticas:', error);
+            // Retornar datos por defecto en caso de error
+            return {
+                totalJugadores: 0,
+                totalGrupos: 0,
+                rankingGrupos: [],
+                rankingJugadores: []
+            };
+        }
+    }
+    const grupoSelect = document.getElementById('groupName');
+
+    document.addEventListener('DOMContentLoaded', async () => {
+
+
+      const data = await fetchStatsData();
+      const grupos = data.rankingGrupos;
+
+      // Agregar grupos al select
+      grupos.forEach(grupo => {
+          const option = document.createElement('option');
+          option.value = grupo.grupo;
+          option.textContent = grupo.grupo;
+          grupoSelect.insertBefore(option, grupoSelect.lastChild);
+      });
+
+    });
+
+    grupoSelect.addEventListener('change', () => {
+        if (grupoSelect.value === 'otro') {
+            const grupoContainer = document.getElementById('InputGroupName');
+            // Crear input para grupo
+            const nuevoInput = document.createElement('input');
+            nuevoInput.type = 'text';
+            nuevoInput.id = 'groupName';
+            nuevoInput.name = 'grupo';
+            nuevoInput.required = true;
+            nuevoInput.placeholder = 'Nombre de tu peña';
+
+            // Reemplazar select por input
+            grupoContainer.replaceChild(nuevoInput, grupoSelect);
+
+            // Enfocar el nuevo input
+            nuevoInput.focus();
+        }
+    });
+
+  </script>
 </body>
 </html>
