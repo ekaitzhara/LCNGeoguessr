@@ -10,6 +10,20 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css"/>
 
   <style>
+    .logo-link {
+      display: inline-block;
+      transition: transform 0.2s ease;
+      text-decoration: none;
+    }
+
+    .logo-link:hover {
+      transform: scale(1.05);
+    }
+
+    .logo-link:hover .logo-img {
+      opacity: 0.8;
+    }
+
     .image-container .image-card img {
       max-width: 100%;
       max-height: 100%;
@@ -42,42 +56,74 @@
     }
 
     .form-container {
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 15px;
-      padding: 20px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      backdrop-filter: none;
+      box-shadow: none;
+      border: none;
     }
 
     .input-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
     .input-group label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #333;
+      font-size: 0.95rem;
     }
 
-    .input-group input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      font-size: 1rem;
+    .input-group label i {
+      margin-right: 8px;
+      color: #667eea;
+      width: 16px;
     }
 
+    .input-group input,
     .input-group select {
       width: 100%;
-      padding: 12px;
+      padding: 14px 16px;
+      border: 2px solid #e2e8f0;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.1);
+      background: #ffffff;
+      color: #333;
       font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .input-group input::placeholder {
+      color: #9ca3af;
+    }
+
+    .input-group select option {
+      color: #333;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border: 2px solid #808cc8;
+      box-shadow: 0 0 0 3px rgba(70, 209, 203, 0.1), 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-group input:hover,
+    .input-group select:hover {
+      border: 2px solid #aeb6ed;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .input-group small {
+      color: #6b7280;
+      font-size: 0.85rem;
     }
 
     .submit-btn {
       width: 100%;
-      padding: 14px;
+      padding: 16px;
       border: none;
       border-radius: 10px;
       background: linear-gradient(to right, #61c664, #00b608);
@@ -85,8 +131,24 @@
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
-      transition: background 0.3s ease, transform 0.2s ease;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(97, 198, 100, 0.2);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(97, 198, 100, 0.3);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn i {
+      margin-right: 8px;
     }
 
     .result-container {
@@ -146,7 +208,9 @@
 
   <div class="container">
     <div class="header">
-      <img src="https://raw.githubusercontent.com/ekaitzhara/LCNGeoguessr/refs/heads/main/img/Logo_LCN.png" alt="Logo LCN" class="logo-img">
+      <a href="index.html" class="logo-link">
+        <img src="https://raw.githubusercontent.com/ekaitzhara/LCNGeoguessr/refs/heads/main/img/Logo_LCN.png" alt="Logo LCN" class="logo-img">
+      </a>
       <h1><i class="fas fa-map-marked-alt"></i> ¿QUÉ CALLE ES?</h1>
       <p>Adivina la calle basándote en las imágenes</p>
     </div>
@@ -393,7 +457,7 @@
     async function fetchStatsData() {
         try {
 
-            const API_URL = "https://script.google.com/macros/s/AKfycby_db9YJUD3usHh_PigOISOeuh_vlGIqJnK38W1dLP9biwf8A3mQ6VUJnkBOEDrh-KVsA/exec";
+            const API_URL = "https://script.google.com/macros/s/AKfycby_db9YJUD3usHh_PigOISOeuh_vlGIqJnK38W1dLP9biwf8A3mQ6VUJnkBOEDrh-KVsA/exec?query=allGroups";
 
             const res = await fetch(API_URL);
             const statsData = await res.json();
@@ -403,10 +467,7 @@
             console.error('Error al obtener las estadísticas:', error);
             // Retornar datos por defecto en caso de error
             return {
-                totalJugadores: 0,
-                totalGrupos: 0,
-                rankingGrupos: [],
-                rankingJugadores: []
+                allGroups: []
             };
         }
     }
@@ -416,13 +477,13 @@
 
 
       const data = await fetchStatsData();
-      const grupos = data.rankingGrupos;
+      const grupos = data.allGroups;
 
       // Agregar grupos al select
       grupos.forEach(grupo => {
           const option = document.createElement('option');
-          option.value = grupo.grupo;
-          option.textContent = grupo.grupo;
+          option.value = grupo;
+          option.textContent = grupo;
           grupoSelect.insertBefore(option, grupoSelect.lastChild);
       });
 

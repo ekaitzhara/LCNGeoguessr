@@ -40,6 +40,20 @@
             max-width: 80%;
         }
 
+        .logo-link {
+          display: inline-block;
+          transition: transform 0.2s ease;
+          text-decoration: none;
+        }
+
+        .logo-link:hover {
+          transform: scale(1.05);
+        }
+
+        .logo-link:hover .logo-img {
+          opacity: 0.8;
+        }
+
         .stats-block {
             background: white;
             border-radius: 15px;
@@ -458,7 +472,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://raw.githubusercontent.com/ekaitzhara/LCNGeoguessr/refs/heads/main/img/Logo_LCN.png" alt="Logo LCN" class="logo-img">
+            <a href="index.html" class="logo-link">
+                <img src="https://raw.githubusercontent.com/ekaitzhara/LCNGeoguessr/refs/heads/main/img/Logo_LCN.png" alt="Logo LCN" class="logo-img">
+            </a>
             <h1>📊 Estadísticas globales</h1>
             <p>Quiénes serán los mejores? </p>
         </div>
