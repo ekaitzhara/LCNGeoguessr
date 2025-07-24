@@ -191,15 +191,6 @@
       user-select: none;        /* evita selección de texto extra */
     }
 
-    /*.stats-link {*/
-    /*  color: #1a202c;*/
-    /*  font-size: 1rem;*/
-    /*  font-weight: bold;*/
-    /*  text-decoration: none;    !* quita el subrayado *!*/
-    /*  text-align: center;*/
-    /*  user-select: none;        !* evita selección de texto extra *!*/
-    /*}*/
-
   </style>
 
 </head>
@@ -235,7 +226,7 @@
           <label for="groupName"><i class="fas fa-users"></i> Peña</label>
 <!--          <input type="text" id="groupName" name="groupName" placeholder="Nombre de tu grupo" required>-->
           <select id="groupName" name="groupName" required>
-              <option value="">-- Seleccione un grupo --</option>
+              <option value="">-- Seleccione una peña --</option>
               <!-- Los grupos se cargarán dinámicamente -->
               <option value="otro">Otro</option>
           </select>
@@ -370,7 +361,7 @@
       const correct = userGuess === respuestaCorrecta;
 
       let puntuacion = 0.0;
-      if (respuestaCorrecta) puntuacion = ayudaUsada ? 0.5 : 1.0;
+      if (correct) puntuacion = ayudaUsada ? 0.5 : 1.0;
 
       // Muestra resultado
       if (correct) {
@@ -479,13 +470,30 @@
       const data = await fetchStatsData();
       const grupos = data.allGroups;
 
+      // Limpiar el select manteniendo solo la primera opción
+      grupoSelect.innerHTML = '<option value="">-- Seleccione una peña --</option>';
+
       // Agregar grupos al select
       grupos.forEach(grupo => {
-          const option = document.createElement('option');
-          option.value = grupo;
-          option.textContent = grupo;
-          grupoSelect.insertBefore(option, grupoSelect.lastChild);
+         const option = document.createElement('option');
+         option.value = grupo;
+         option.textContent = grupo;
+         grupoSelect.appendChild(option);
       });
+
+      // Agregar "otro" al final
+      const otroOption = document.createElement('option');
+      otroOption.value = 'otro';
+      otroOption.textContent = 'Otro';
+      grupoSelect.appendChild(otroOption);
+
+      // // Agregar grupos al select
+      // grupos.forEach(grupo => {
+      //     const option = document.createElement('option');
+      //     option.value = grupo;
+      //     option.textContent = grupo;
+      //     grupoSelect.insertBefore(option, grupoSelect.lastChild);
+      // });
 
     });
 
