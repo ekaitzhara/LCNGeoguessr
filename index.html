@@ -128,64 +128,56 @@
     /*  user-select: none;        !* evita selección de texto extra *!*/
     /*}*/
 
-    .image-container .image-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: 8px;
-      touch-action: pan-x pan-y pinch-zoom;
-    }
-
-    .image-container .image-card img {
-      max-width: 100%;
-      max-height: 100%;
-      height: auto;
-      width: auto;
-      object-fit: contain;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: transform 0.3s ease;
-      transform-origin: center center;
-      user-select: none;
-    }
-
-    .zoom-overlay {
+    .overlay {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.9);
-      display: none;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(5px);
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
-      touch-action: pan-x pan-y pinch-zoom;
     }
 
-    .zoom-overlay img {
-      max-width: 95vw;
-      max-height: 95vh;
-      object-fit: contain;
-      cursor: grab;
+    .overlay.hidden {
+      display: none;
+    }
+
+    .zoom-wrapper {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      overflow: hidden;
+      touch-action: none;
+      border-radius: 10px;
+    }
+
+    #overlay-img {
+      width: 100%;
+      height: auto;
+      transform-origin: center center;
+      will-change: transform;
       user-select: none;
-      touch-action: pan-x pan-y pinch-zoom;
+      touch-action: none;
     }
 
-    .close-zoom {
+    #close-overlay {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.2);
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.8);
       border: none;
-      color: white;
-      font-size: 24px;
-      padding: 10px;
       border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      font-weight: bold;
       cursor: pointer;
-      backdrop-filter: blur(10px);
-      z-index: 1001;
     }
+
 
   </style>
 
@@ -254,10 +246,15 @@
     </div>
   </div>
 
-  <div id="zoom-overlay" class="zoom-overlay" onclick="closeZoom()">
-    <button class="close-zoom" onclick="event.stopPropagation(); closeZoom()">×</button>
-    <img id="zoom-image" src="" alt="" onclick="event.stopPropagation()">
+  <!-- Overlay para ver imagen ampliada -->
+  <div id="image-overlay" class="overlay hidden">
+    <div class="overlay-background" onclick="cerrarOverlay()"></div>
+    <div class="zoom-wrapper">
+      <img id="overlay-img" src="" alt="Imagen ampliada">
+      <button id="close-overlay" onclick="cerrarOverlay()">✕</button>
+    </div>
   </div>
+
 
   <script>
     // Base de datos de lugares con sus carpetas
@@ -280,142 +277,6 @@
     const lugarActual = lugares[Math.floor(Math.random() * lugares.length)];
     let ayudaUsada = false;
 
-    // Función para abrir imagen en zoom
-    function openZoom(imgSrc, imgAlt) {
-      const overlay = document.getElementById('zoom-overlay');
-      const zoomImg = document.getElementById('zoom-image');
-
-      zoomImg.src = imgSrc;
-      zoomImg.alt = imgAlt;
-      overlay.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-
-      // Reset transform
-      zoomImg.style.transform = 'scale(1) translate(0px, 0px)';
-    }
-
-    function closeZoom() {
-      const overlay = document.getElementById('zoom-overlay');
-      overlay.style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
-
-    // Cerrar zoom con ESC
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeZoom();
-    });
-
-    // Zoom nativo con rueda del ratón en la imagen ampliada
-    document.getElementById('zoom-image').addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const img = e.target;
-      const rect = img.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const currentTransform = img.style.transform || 'scale(1) translate(0px, 0px)';
-      const scaleMatch = currentTransform.match(/scale\(([\d.]+)\)/);
-      const translateMatch = currentTransform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
-
-      let currentScale = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
-      let currentX = translateMatch ? parseFloat(translateMatch[1]) : 0;
-      let currentY = translateMatch ? parseFloat(translateMatch[2]) : 0;
-
-      const scaleFactor = e.deltaY > 0 ? 0.9 : 1.1;
-      const newScale = Math.min(Math.max(currentScale * scaleFactor, 0.5), 4);
-
-      // Calcular nueva posición para centrar el zoom en el cursor
-      const scaleDiff = newScale - currentScale;
-      const newX = currentX - (x - rect.width / 2) * scaleDiff / currentScale;
-      const newY = currentY - (y - rect.height / 2) * scaleDiff / currentScale;
-
-      img.style.transform = `scale(${newScale}) translate(${newX}px, ${newY}px)`;
-    });
-
-    // Variables para el arrastre
-    let isDragging = false;
-    let startX, startY, initialX = 0, initialY = 0;
-
-    // Soporte para arrastrar imagen ampliada
-    document.getElementById('zoom-image').addEventListener('mousedown', startDrag);
-    document.getElementById('zoom-image').addEventListener('touchstart', startDrag, { passive: false });
-
-    function startDrag(e) {
-      const img = e.target;
-      const currentTransform = img.style.transform || 'scale(1) translate(0px, 0px)';
-      const scaleMatch = currentTransform.match(/scale\(([\d.]+)\)/);
-      const currentScale = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
-
-      if (currentScale <= 1) return;
-
-      e.preventDefault();
-      isDragging = true;
-      img.style.cursor = 'grabbing';
-
-      const clientX = e.clientX || e.touches[0].clientX;
-      const clientY = e.clientY || e.touches[0].clientY;
-
-      const translateMatch = currentTransform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
-      initialX = translateMatch ? parseFloat(translateMatch[1]) : 0;
-      initialY = translateMatch ? parseFloat(translateMatch[2]) : 0;
-
-      startX = clientX;
-      startY = clientY;
-
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('touchmove', drag, { passive: false });
-      document.addEventListener('mouseup', stopDrag);
-      document.addEventListener('touchend', stopDrag);
-    }
-
-    function drag(e) {
-      if (!isDragging) return;
-      e.preventDefault();
-
-      const clientX = e.clientX || e.touches[0].clientX;
-      const clientY = e.clientY || e.touches[0].clientY;
-
-      const deltaX = clientX - startX;
-      const deltaY = clientY - startY;
-
-      const newX = initialX + deltaX;
-      const newY = initialY + deltaY;
-
-      const img = document.getElementById('zoom-image');
-      const currentTransform = img.style.transform || 'scale(1) translate(0px, 0px)';
-      const scaleMatch = currentTransform.match(/scale\(([\d.]+)\)/);
-      const currentScale = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
-
-      img.style.transform = `scale(${currentScale}) translate(${newX}px, ${newY}px)`;
-    }
-
-    function stopDrag() {
-      isDragging = false;
-      const img = document.getElementById('zoom-image');
-      img.style.cursor = 'grab';
-
-      document.removeEventListener('mousemove', drag);
-      document.removeEventListener('touchmove', drag);
-      document.removeEventListener('mouseup', stopDrag);
-      document.removeEventListener('touchend', stopDrag);
-    }
-
-    // Doble click para hacer zoom
-    document.getElementById('zoom-image').addEventListener('dblclick', (e) => {
-      const img = e.target;
-      const currentTransform = img.style.transform || 'scale(1) translate(0px, 0px)';
-      const scaleMatch = currentTransform.match(/scale\(([\d.]+)\)/);
-      const currentScale = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
-
-      if (currentScale > 1) {
-        img.style.transform = 'scale(1) translate(0px, 0px)';
-      } else {
-        const rect = img.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        img.style.transform = `scale(2) translate(${-x/2}px, ${-y/2}px)`;
-      }
-    });
 
     // Carga las imágenes del lugar seleccionado
     // const imagesContainer = document.getElementById('images-container');
@@ -438,11 +299,11 @@
     imagesContainer.innerHTML = `
       <div class="image-card">
         <div class="image-label">Vista de la calle</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}" onclick="openZoom('${imgsPath}/img/${lugarActual.carpeta}/Captura1.png', 'Vista 1 de ${lugarActual.label}')">
+        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
       </div>
       <div class="image-card">
         <div class="image-label">Otra perspectiva</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}" onclick="openZoom('${imgsPath}/img/${lugarActual.carpeta}/Captura2.png', 'Vista 2 de ${lugarActual.label}')">
+        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
       </div>
     `;
 
@@ -450,7 +311,7 @@
       const mapaHTML = `
         <div class="image-card">
           <div class="image-label">Vista del mapa</div>
-          <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}" onclick="openZoom('${imgsPath}/img/${lugarActual.carpeta}/Mapa.png', 'Mapa de ${lugarActual.label}')">
+          <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}" onclick="mostrarImagen(this.src)">
         </div>
       `;
       imagesContainer.insertAdjacentHTML('beforeend', mapaHTML);
@@ -523,5 +384,84 @@
 
     });
   </script>
+
+  <script>
+    const overlay = document.getElementById("image-overlay");
+    const overlayImg = document.getElementById("overlay-img");
+
+    let lastScale = 1;
+    let lastX = 0;
+    let lastY = 0;
+    let startX = 0;
+    let startY = 0;
+    let initialDistance = null;
+
+    function mostrarImagen(src) {
+      overlay.classList.remove("hidden");
+      overlayImg.src = src;
+      resetZoom();
+    }
+
+    function cerrarOverlay() {
+      overlay.classList.add("hidden");
+      resetZoom();
+    }
+
+    function resetZoom() {
+      lastScale = 1;
+      lastX = 0;
+      lastY = 0;
+      overlayImg.style.transform = `scale(1) translate(0px, 0px)`;
+    }
+
+    overlayImg.addEventListener("touchstart", function (e) {
+      if (e.touches.length === 2) {
+        const [t1, t2] = e.touches;
+        initialDistance = Math.hypot(
+          t2.pageX - t1.pageX,
+          t2.pageY - t1.pageY
+        );
+      } else if (e.touches.length === 1 && lastScale > 1) {
+        startX = e.touches[0].clientX - lastX;
+        startY = e.touches[0].clientY - lastY;
+      }
+    });
+
+    overlayImg.addEventListener("touchmove", function (e) {
+      e.preventDefault();
+
+      if (e.touches.length === 2 && initialDistance) {
+        const [t1, t2] = e.touches;
+        const currentDistance = Math.hypot(
+          t2.pageX - t1.pageX,
+          t2.pageY - t1.pageY
+        );
+        let scale = currentDistance / initialDistance;
+        lastScale = Math.min(Math.max(scale, 1), 4);
+      } else if (e.touches.length === 1 && lastScale > 1) {
+        lastX = e.touches[0].clientX - startX;
+        lastY = e.touches[0].clientY - startY;
+
+        // Limita el movimiento
+        const wrapper = overlayImg.parentElement;
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const imgWidth = overlayImg.offsetWidth * lastScale;
+        const imgHeight = overlayImg.offsetHeight * lastScale;
+
+        const maxX = Math.max((imgWidth - wrapperRect.width) / 2, 0);
+        const maxY = Math.max((imgHeight - wrapperRect.height) / 2, 0);
+
+        lastX = Math.max(Math.min(lastX, maxX), -maxX);
+        lastY = Math.max(Math.min(lastY, maxY), -maxY);
+      }
+
+      overlayImg.style.transform = `scale(${lastScale}) translate(${lastX}px, ${lastY}px)`;
+    }, { passive: false });
+
+    overlayImg.addEventListener("touchend", function () {
+      initialDistance = null;
+    });
+  </script>
+
 </body>
 </html>
