@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css" />
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css"/>
 
   <style>
     .image-container .image-card img {
@@ -237,7 +237,6 @@
     // `;
     const imgsPath = 'https://raw.githubusercontent.com/ekaitzhara/LCNGeoguessr/refs/heads/main'
     const imagesContainer = document.getElementById('images-container');
-    imagesContainer.classList.add('gallery');
     imagesContainer.innerHTML = `
       <div class="image-card">
         <div class="image-label">Vista de la calle</div>
@@ -247,7 +246,9 @@
       </div>
       <div class="image-card">
         <div class="image-label">Otra perspectiva</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}">
+        <a href="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png">
+            <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}">
+        </a>
       </div>
     `;
 
@@ -255,7 +256,9 @@
       const mapaHTML = `
         <div class="image-card">
           <div class="image-label">Vista del mapa</div>
-          <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}">
+          <a href="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png">
+            <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}">
+          </a>
         </div>
       `;
       imagesContainer.insertAdjacentHTML('beforeend', mapaHTML);
@@ -330,25 +333,30 @@
   </script>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.umd.min.js"></script>
+
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      lightGallery(document.getElementById('gallery'), {
+    document.addEventListener("DOMContentLoaded", function () {
+      // lgZoom viene importado por lg-zoom.umd.min.js
+      lightGallery(document.getElementById("images-container"), {
         selector: 'a',
         plugins: [lgZoom],
-        speed: 500,
+        speed: 400,
         zoom: true,
         zoomFromOrigin: false,
+        download: false,
+        getCaptionFromTitleOrAlt: false,
         mobileSettings: {
           controls: false,
           showCloseIcon: true,
-          showMaximizeIcon: false,
+          download: false,
         }
       });
     });
   </script>
+
 
 </body>
 </html>
