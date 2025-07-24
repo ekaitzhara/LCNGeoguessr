@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>¿Qué Calle Es?</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Lightbox2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/css/lightbox.min.css" rel="stylesheet">
+
+
   <link rel="stylesheet" href="style.css" />
 
   <style>
@@ -202,6 +206,9 @@
       { label: "Calle de la Laguna", nombre: "Laguna", carpeta: "laguna" },
       { label: "Calle de la Reina", nombre: "Reina", carpeta: "reina" },
       { label: "Calle del Arco", nombre: "Arco", carpeta: "arco" },
+      { label: "Calle del Cerro", nombre: "Cerro", carpeta: "cerro" },
+      { label: "Calle del Santo", nombre: "Santo", carpeta: "santo" },
+      { label: "Calle San Antón", nombre: "San Anton", carpeta: "san_anton" },
       { label: "Calle Travesia del Cerro", nombre: "Travesia del Cerro", carpeta: "travesia_cerro" },
       { label: "Calle del Pozo", nombre: "Pozo", carpeta: "pozo" },
       // { nombre: "Gran Vía", carpeta: "gran_via" },
@@ -235,11 +242,15 @@
     imagesContainer.innerHTML = `
       <div class="image-card">
         <div class="image-label">Vista de la calle</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}">
+        <a href="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" data-lightbox="lugar" data-title="Vista 1">
+            <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura1.png" alt="Vista 1 de ${lugarActual.label}">
+        </a>
       </div>
       <div class="image-card">
         <div class="image-label">Otra perspectiva</div>
-        <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}">
+        <a href="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" data-lightbox="lugar" data-title="Vista 2">
+            <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}">
+        </a>
       </div>
     `;
 
@@ -247,7 +258,9 @@
       const mapaHTML = `
         <div class="image-card">
           <div class="image-label">Vista del mapa</div>
-          <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}">
+          <a href="${imgsPath}/img/${lugarActual.carpeta}/Mapa  .png" data-lightbox="lugar" data-title="Vista mapa">
+            <img src="${imgsPath}/img/${lugarActual.carpeta}/Mapa.png" alt="Mapa de ${lugarActual.label}">
+          </a>
         </div>
       `;
       imagesContainer.insertAdjacentHTML('beforeend', mapaHTML);
@@ -280,7 +293,7 @@
 
       // Muestra resultado
       if (correct) {
-        resultText.innerHTML = `<span class="correct"><i class="fas fa-check-circle"></i> ¡CORRECTO! Es ${lugarActual.nombre}</span>`;
+        resultText.innerHTML = `<span class="correct"><i class="fas fa-check-circle"></i> ¡CORRECTO! Es ${lugarActual.label}</span>`;
       } else {
         resultText.innerHTML = `<span class="incorrect"><i class="fas fa-times-circle"></i> INCORRECTO. Era: ${lugarActual.label}</span>`;
       }
@@ -320,5 +333,9 @@
 
     });
   </script>
+
+  <!-- Lightbox2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox.min.js"></script>
+
 </body>
 </html>
