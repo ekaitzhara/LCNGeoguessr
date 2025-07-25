@@ -280,7 +280,14 @@
       { label: "Calle del Santo", nombre: "Santo", carpeta: "santo" },
       { label: "Calle San Antón", nombre: "San Anton", carpeta: "san_anton" },
       { label: "Calle Travesia del Cerro", nombre: "Travesia del Cerro", carpeta: "travesia_cerro" },
+      { label: "Calle Travesia del Calvario", nombre: "Travesia del Calvario", carpeta: "travesia_calvario" },
       { label: "Calle del Pozo", nombre: "Pozo", carpeta: "pozo" },
+      { label: "Calle Antonio Núñez", nombre: "Antonio Nunez", carpeta: "antonio_nunez" },
+      { label: "Calle Cardenal Segura", nombre: "Cardenal Segura", carpeta: "cardenal_segura" },
+      { label: "Calle V Centenario", nombre: "V Centenario", carpeta: "v_centenario" },
+      { label: "Calle del Calvario", nombre: "Calvario", carpeta: "calvario" },
+      { label: "Callejón de la Trilla", nombre: "Trilla", carpeta: "trilla" },
+      { label: "Camino del Cementerio", nombre: "Cementerio", carpeta: "cementerio" },
       // { nombre: "Gran Vía", carpeta: "gran_via" },
       // { nombre: "Calle Mayor", carpeta: "calle_mayor" }
       // Añade más lugares según tu estructura de carpetas
@@ -341,6 +348,9 @@
       initLightGallery();
     });
 
+    function removeAccents(text) {
+      return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
 
 
     // Maneja el envío del formulario
@@ -355,8 +365,8 @@
       let userGuess = document.getElementById("guess").value.trim();
 
       // Limpia prefijos comunes de calles
-      userGuess = userGuess.replace(/^(calle del|calle el|calle de la|calle de los|calle|avenida de los|avenida de|avenida del|avenida)\s+/i, '');
-      userGuess = userGuess.toLowerCase();
+      userGuess = removeAccents(userGuess.toLowerCase());
+      userGuess = userGuess.replace(/^(calle del|calle el|calle de la|calle de los|calle|avenida de los|avenida de|avenida del|avenida|camino del|camino|callejon de la)\s+/i, '');
 
       const respuestaCorrecta = lugarActual.nombre.toLowerCase();
       const correct = userGuess === respuestaCorrecta;
