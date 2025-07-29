@@ -56,6 +56,75 @@
       transition: background 0.3s ease;
     }
 
+    #instrucciones-container {
+     background: rgba(0, 0, 0, 0.4);
+     border-radius: 15px;
+     padding: 20px;
+     backdrop-filter: blur(10px);
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+     border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #instrucciones-container h3 {
+     color: #ffffff;
+     margin-bottom: 15px;
+     text-align: center;
+      font-size: 1.5rem;
+    }
+
+    #instrucciones-container div {
+      padding: 10px;
+      text-align: justify;
+    }
+
+    #instrucciones-container div p {
+     color: #ffffff;
+     margin-bottom: 12px;
+     font-size: 0.95rem;
+     line-height: 1.5;
+    }
+
+    #instrucciones-container div p strong {
+      padding-right: 5px;
+      color: #4f46e5;
+      font-weight: bold;
+    }
+
+    #instrucciones-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(to right, #4f46e5, #7c3aed);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #instrucciones-btn i {
+      margin-right: 8px;
+    }
+
+    #instrucciones-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    #cerrar-instrucciones-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    #cerrar-instrucciones-btn {
+     transition: all 0.3s ease;
+    }
+
+    #cerrar-instrucciones-btn:hover {
+     background: #dc2626 !important;
+     transform: scale(1.1);
+    }
+
+
     .form-container {
       background: transparent;
       border-radius: 0;
@@ -212,7 +281,34 @@
         <div class="image-container" id="images-container">
           <!-- Las imágenes se cargarán aquí dinámicamente -->
         </div>
-        <button id="ver-mapa-btn" class="btn reveal-map-btn" style="margin-top:1rem;">¿Necesitas ayuda? Puedes ver el mapa (penaliza 50%)</button>
+        <button id="ver-mapa-btn" class="btn reveal-map-btn" style="margin-top:1rem;">¿Quieres ver el mapa? (penaliza 50%)</button>
+
+        <!-- Modificar el botón de instrucciones -->
+        <div style="text-align: right; margin-top: 1rem;">
+           <button id="instrucciones-btn" class="btn reveal-map-btn">
+             <i class="fas fa-question-circle"></i> ¿Cómo se juega?
+           </button>
+        </div>
+
+        <!-- Modificar el contenedor de instrucciones -->
+        <div id="instrucciones-container" class="result-container stats-block" style="display: none; margin-top: 1rem;">
+         <div style="position: relative;">
+           <button id="cerrar-instrucciones-btn" class="btn" style="position: absolute; top: -5px; right: -5px; background: linear-gradient(to right, #ef4444, #dc2626); border: none; border-radius: 50%; width: 32px; height: 32px; color: white; cursor: pointer; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);">
+             <i class="fas fa-times"></i>
+           </button>
+           <h3>¿Cómo se juega?</h3>
+           <div>
+             <p><strong>1.</strong> Inicialmente se muestran dos imágenes de la calle a adivinar.</p>
+             <p><strong>2.</strong> Escribe tu nombre, selecciona tu peña* y adivina la calle.</p>
+             <p>&nbsp;&nbsp;&nbsp;<strong>*</strong>Después de unos segundos, las peñas se cargan a partir de las usadas por otros jugadores. Si todavía no aparece la tuya, puedes seleccionar "Otro" y escribir el nombre directamente.</p>
+             <p><strong>4.</strong> Si necesitas ayuda, puedes ver el mapa (pero obtendrás solo el 50% de la puntuación, es decir, 0.5 puntos si aciertas)</p>
+             <p><strong>5.</strong> Cuando envies tu respuesta, podrás ver si has acertado, y todas tus estadísticas.</p>
+             <p><strong>6.</strong> Siempre puedes ver las estadísticas globales en directo.</p>
+             <p><strong>7.</strong> ¡Ánimo, a ser el ganador de Hinojal!</p>
+           </div>
+         </div>
+        </div>
+
     </div>
 
     <div class="stats-block">
@@ -452,6 +548,21 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       initLightGallery();
+    });
+  </script>
+
+  <script>
+
+    // Script para presentar las instrucciones
+    // ---------------------------------------
+    document.getElementById('instrucciones-btn').addEventListener('click', () => {
+      document.getElementById('instrucciones-container').style.display = 'block';
+      document.getElementById('instrucciones-btn').style.display = 'none';
+    });
+
+    document.getElementById('cerrar-instrucciones-btn').addEventListener('click', () => {
+      document.getElementById('instrucciones-container').style.display = 'none';
+      document.getElementById('instrucciones-btn').style.display = 'block';
     });
   </script>
 
