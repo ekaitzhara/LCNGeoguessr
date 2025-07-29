@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LCN Game: Estadísticas globales</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ekaitzhara/LCNGeoguessr/refs/heads/main/img/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -389,6 +390,28 @@
             border-left: 4px solid #ed8936;
         }
 
+        .action-button {
+          width: 60%;
+          padding: 14px;
+          border: none;
+          border-radius: 10px;
+          background: linear-gradient(to right, #46d1cb, #138a85);
+          cursor: pointer;
+          transition: background 0.3s ease, transform 0.2s ease;
+          margin: 5px auto;
+        }
+
+        .stats-btn {
+          display: block;
+          width: 100%;
+          color: #1a202c;
+          font-size: 1rem;
+          font-weight: bold;
+          text-decoration: none;    /* quita el subrayado */
+          text-align: center;
+          user-select: none;        /* evita selección de texto extra */
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -532,6 +555,15 @@
                     <!-- Las filas se generarán dinámicamente -->
                 </tbody>
             </table>
+        </div>
+
+        <div class="stats-block" id="index-return-container">
+          <h2 class="block-title">🎮 ¿Listo para más?</h2>
+          <div class="action-button" style="width: 100%">
+            <a id="index-return-link" href="index.html" class="btn stats-btn">
+              <i class="fa-solid fa-image"></i> VOLVER A JUGAR
+            </a>
+          </div>
         </div>
 
     </div>
