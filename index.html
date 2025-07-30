@@ -424,7 +424,7 @@
         </a>
       </div>
       <div class="image-card">
-        <div class="image-label">Otra perspectiva</div>
+        <div class="image-label">Otra vista</div>
         <a href="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png">
             <img src="${imgsPath}/img/${lugarActual.carpeta}/Captura2.png" alt="Vista 2 de ${lugarActual.label}">
         </a>
@@ -466,7 +466,7 @@
 
       // Limpia prefijos comunes de calles
       userGuess = removeAccents(userGuess.toLowerCase());
-      userGuess = userGuess.replace(/^(calle del|calle el|calle de la|calle de los|calle|avenida de los|avenida de|avenida del|avenida|camino del|camino|callejon de la)\s+/i, '');
+      userGuess = userGuess.replace(/^(calle del|calle el|calle de la|calle de los|calle|avenida de los|avenida de|avenida del|avenida|camino del|camino|callejon de la|el|la|los|las)\s+/i, '').trim();
 
       const respuestaCorrecta = lugarActual.nombre.toLowerCase();
       const correct = userGuess === respuestaCorrecta;
